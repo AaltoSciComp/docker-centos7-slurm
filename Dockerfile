@@ -43,6 +43,7 @@ RUN set -ex \
         psmisc \
         readline-devel \
         screen \
+        sudo \
         sqlite-devel \
         tcl-devel \
         tix-devel \
@@ -151,5 +152,19 @@ RUN \
    chmod a+x /usr/local/bin/{sinteractive,_interactive,_interactive_screen} && \
    rm -r sinteractive
 
-ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
+# NB_UID is not currently used
+ARG NB_USER=rkdarst
+ARG NB_UID=1000
+
+# Add the user, give user passwordless sudo
+RUN \
+    adduser --comment "Default user" --uid 1000 rkdarst && \
+    passwd -d rkdarst && \
+    echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudo_nopasswd && \
+    sed -i '/secure_path/d' /etc/sudoers && \
+    usermod -aG wheel rkdarst
+
+USER ${NB_USER}
+
+ENTRYPOINT ["/sbin/tini", "--", "sudo", "-E", "/usr/local/bin/docker-entrypoint.sh", "sudo", "-E", "-u", "#1000"]
 CMD ["/bin/bash"]
