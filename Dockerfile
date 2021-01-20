@@ -42,6 +42,7 @@ RUN set -ex \
         pkconfig \
         psmisc \
         readline-devel \
+        screen \
         sqlite-devel \
         tcl-devel \
         tix-devel \
@@ -138,6 +139,17 @@ COPY files/modulefiles/ /usr/share/modulefiles/
 
 RUN \
     pip3 install notebook
+
+RUN \
+   cd /tmp && \
+   git clone https://github.com/jabl/slurm_tool && \
+   cp slurm_tool/slurm /usr/local/bin/ && \
+   chmod a+x /usr/local/bin/slurm && \
+   rm -r slurm_tool && \
+   git clone https://github.com/jabl/sinteractive && \
+   cp sinteractive/{sinteractive,_interactive,_interactive_screen} /usr/local/bin/ && \
+   chmod a+x /usr/local/bin/{sinteractive,_interactive,_interactive_screen} && \
+   rm -r sinteractive
 
 ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/bin/bash"]
