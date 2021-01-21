@@ -81,8 +81,8 @@ RUN set -ex \
     && install -D -m644 contribs/slurm_completion_help/slurm_completion.sh /etc/profile.d/slurm_completion.sh \
     && popd \
     && rm -rf slurm \
-    && groupadd -r slurm  \
-    && useradd -r -g slurm slurm \
+    && groupadd slurm  \
+    && useradd -u 1000 -g slurm slurm \
     && mkdir /etc/sysconfig/slurm \
         /var/spool/slurmd \
         /var/run/slurmd \
@@ -153,19 +153,25 @@ RUN \
    rm -r sinteractive
 
 # NB_UID is not currently used
-ARG NB_USER=rkdarst
-ARG NB_UID=1000
+#ARG NB_USER=rkdarst
+#ARG NB_UID=1000
 
 # Add the user, give user passwordless sudo
+#RUN \
+#    adduser --comment "Default user" --uid 1000 rkdarst && \
+#    passwd -d rkdarst && \
+#    echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudo_nopasswd && \
+#    sed -i '/secure_path/d' /etc/sudoers && \
+#    usermod -aG wheel rkdarst
+
 RUN \
-    adduser --comment "Default user" --uid 1000 rkdarst && \
-    passwd -d rkdarst && \
+    passwd -d slurm && \
     echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudo_nopasswd && \
     sed -i '/secure_path/d' /etc/sudoers && \
-    usermod -aG wheel rkdarst
+    usermod -aG wheel slurm
 
-USER ${NB_USER}
-WORKDIR /home/${NB_USER}
+USER slurm
+WORKDIR /home/slurm
 
 ENTRYPOINT ["/sbin/tini", "--", "sudo", "-E", "/usr/local/bin/docker-entrypoint.sh", "sudo", "-E", "-u", "#1000"]
 CMD ["/bin/bash"]
