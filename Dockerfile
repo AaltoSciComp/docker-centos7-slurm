@@ -165,6 +165,7 @@ RUN \
     usermod -aG wheel rkdarst
 
 USER ${NB_USER}
+WORKDIR /home/${NB_USER}
 
 ENTRYPOINT ["/sbin/tini", "--", "sudo", "-E", "/usr/local/bin/docker-entrypoint.sh", "sudo", "-E", "-u", "#1000"]
 CMD ["/bin/bash"]
