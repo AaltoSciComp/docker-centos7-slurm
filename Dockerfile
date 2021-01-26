@@ -139,7 +139,8 @@ COPY files/hello-world /usr/local/modules/hello/bin/
 COPY files/modulefiles/ /usr/share/modulefiles/
 
 RUN \
-    pip3 install notebook 'zipp>0.5'
+    pip3 install 'notebook==5.*' 'zipp>0.5' && \
+    pip3 install jupyterhub
 
 RUN \
    cd /tmp && \
