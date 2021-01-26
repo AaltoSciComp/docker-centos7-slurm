@@ -166,7 +166,7 @@ ARG NB_UID=1000
 
 RUN \
     passwd -d slurm && \
-    echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudo_nopasswd && \
+    echo "%wheel ALL=(ALL) NOPASSWD,SETENV: ALL" > /etc/sudoers.d/sudo_nopasswd && \
     sed -i '/secure_path/d' /etc/sudoers && \
     usermod -aG wheel slurm
 
