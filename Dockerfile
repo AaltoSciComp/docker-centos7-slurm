@@ -153,8 +153,8 @@ RUN \
    rm -r sinteractive
 
 # NB_UID is not currently used
-#ARG NB_USER=rkdarst
-#ARG NB_UID=1000
+ARG NB_USER=rkdarst
+ARG NB_UID=1000
 
 # Add the user, give user passwordless sudo
 #RUN \
@@ -169,6 +169,11 @@ RUN \
     echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudo_nopasswd && \
     sed -i '/secure_path/d' /etc/sudoers && \
     usermod -aG wheel slurm
+
+RUN \
+   mkdir /home/${NB_USER} && \
+   chown 1000:1000 -R /home/${NB_USER} && \
+   echo NB_USER=${NB_USER} NB_UID=${NB_UID}
 
 USER slurm
 WORKDIR /home/slurm
